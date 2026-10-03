@@ -17,6 +17,7 @@ An enterprise-grade, end-to-end Machine Learning system engineered for predictiv
 The Air Pressure System (APS) in commercial vehicles provides compressed air for safety-critical operations, primarily braking and gear-changing subsystems. Unpredicted APS failures lead to roadside breakdowns, towing costs, and hazardous conditions.
 
 ### The Asymmetric Cost Matrix
+
 Traditional classification models optimize for symmetric accuracy or F1-score, which fails in high-stakes predictive maintenance. This project is directly aligned with the **Scania APS Failure Cost Function**:
 
 | Outcome | Technical Term | Operational Impact | Cost (USD) |
@@ -74,14 +75,18 @@ flowchart TD
         P -->|"CSV Streaming"| R["Batch /predict Route"]
         P -->|"JSON Telemetry"| S["Real-Time /predict-live Route"]
     end
+```
+
 ---
 
 ## 🔬 Exploratory Data Analysis & Scientific Learnings
 
 1. **High Dimensionality & Sparse Sensors:**
    The raw dataset contains **171 columns** (1 target + 170 anonymized sensor metrics). 7 features (`br_000`, `bq_000`, `bp_000`, `ab_000`, `cr_000`, `bo_000`, `bn_000`) exhibited **$> 70\%$ missing values** and were eliminated to remove noise.
+
 2. **Extreme Positive Skewness:**
    Sensors such as `aa_000` and `co_000` exhibit extreme right-skewness (medians near 8 vs means exceeding 300,000). A `RobustScaler` was selected over standard normalization to eliminate distortion from extreme sensor spikes.
+
 3. **Severe Class Imbalance:**
    The target distribution contains **~2.7% positive failure cases** (`pos`). Class balance is treated using `SMOTETomek` strictly on transformed training data, preventing information leakage into the test set.
 
@@ -159,10 +164,12 @@ APS_sensorlive/
 ## 🚀 Quickstart & Setup Guide
 
 ### 1. Prerequisites
+
 * Python 3.10 or 3.11
 * MongoDB Atlas cluster or local MongoDB instance
 
 ### 2. Environment Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/NamanVerma27/APS_liveSensor.git
@@ -173,6 +180,7 @@ python -m venv venv
 
 # Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
+
 # Linux / macOS:
 source venv/bin/activate
 
@@ -182,11 +190,15 @@ pip install -e .
 ```
 
 ### 3. Configure Credentials
+
 Copy the `.env.example` file to `.env` and configure your MongoDB connection string:
+
 ```bash
 cp .env.example .env
 ```
+
 Edit `.env`:
+
 ```ini
 MONGO_DB_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority"
 ```
@@ -196,19 +208,26 @@ MONGO_DB_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWri
 ## ⚡ Running the API & Inference
 
 ### 1. Start the FastAPI Service
+
 ```bash
 python main.py
 ```
+
 The server will bind to `http://0.0.0.0:8080`.
+
 * **Interactive Documentation (Swagger):** `http://localhost:8080/docs`
 * **Alternative Documentation (ReDoc):** `http://localhost:8080/redoc`
 
 ### 2. Trigger End-to-End Pipeline Training
+
 The training route operates asynchronously in the background, keeping the API responsive for predictions:
+
 ```bash
 curl -X GET "http://localhost:8080/train"
 ```
+
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -217,12 +236,16 @@ curl -X GET "http://localhost:8080/train"
 ```
 
 ### 3. Batch Inference (CSV Upload)
+
 Predict on a batch CSV file:
+
 ```bash
 curl -X POST "http://localhost:8080/predict" \
      -F "file=@test_sensors.csv"
 ```
+
 **JSON Response:**
+
 ```json
 {
   "status": "success",
@@ -237,6 +260,7 @@ curl -X POST "http://localhost:8080/predict" \
 ```
 
 To stream and download the full predictions as a CSV file:
+
 ```bash
 curl -X POST "http://localhost:8080/predict?download=true" \
      -F "file=@test_sensors.csv" \
@@ -244,13 +268,17 @@ curl -X POST "http://localhost:8080/predict?download=true" \
 ```
 
 ### 4. Real-Time Telemetry Inference (Single Reading)
+
 Send JSON telemetry directly from an onboard IoT sensor device:
+
 ```bash
 curl -X POST "http://localhost:8080/predict-live" \
      -H "Content-Type: application/json" \
      -d '{"aa_000": 76698, "ac_000": 2130706432, "ad_000": 366, "ae_000": 0}'
 ```
+
 **Response:**
+
 ```json
 {
   "status": "success",
