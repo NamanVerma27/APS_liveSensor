@@ -26,6 +26,7 @@ class ClassificationMetricArtifact:
     f1_score: float
     precision_score: float
     recall_score: float
+    cost: float = 0.0
 
 @dataclass
 class ModelTrainerArtifact: # significance - holds file path for the trained model

@@ -7,6 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
 from sklearn.model_selection import GridSearchCV
 
 from sensor.utils.main_utils import load_numpy_array_data
@@ -62,18 +63,20 @@ class ModelTrainer:
         except Exception as e:
             raise SensorException(e, sys)
 
-    def train_model(self,x_train,y_train , best_params = None):
+    def train_model(self, x_train, y_train, best_params=None, model_type="xgboost"):
         """
-        Trains the XGBoost model using either default or tuned parameters.
+        Trains either XGBoost or CatBoost using tuned or default parameters.
         """
         try:
-            if best_params is not None:
-                xgb_clf = XGBClassifier(**best_params) # Unpack the best params
+            if model_type.lower() == "catboost":
+                params = best_params if best_params is not None else {"verbose": False, "random_state": 42}
+                model = CatBoostClassifier(**params)
             else:
-                xgb_clf = XGBClassifier()
+                params = best_params if best_params is not None else {"random_state": 42, "eval_metric": "logloss"}
+                model = XGBClassifier(**params)
             
-            xgb_clf.fit(x_train, y_train)
-            return xgb_clf
+            model.fit(x_train, y_train)
+            return model
         except Exception as e:
             raise SensorException(e, sys)
         

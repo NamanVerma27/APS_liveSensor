@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 from sensor.constant.training_pipeline import TARGET_COLUMN
 from sensor.entity.config_entity import ModelEvaluationConfig
+from dataclasses import asdict
 from sensor.entity.artifact_entity import ( DataValidationArtifact,
                                            ModelTrainerArtifact,
                                            ModelEvaluationArtifact)
@@ -94,7 +95,7 @@ class ModelEvaluation:
             )
 
             # Save results to YAML for audit trail
-            model_eval_report = model_evaluation_artifact.__dict__
+            model_eval_report = asdict(model_evaluation_artifact)
             write_yaml_file(self.model_eval_config.report_file_path, model_eval_report)
 
             logger.info(f"Model evaluation completed. Artifact: {model_evaluation_artifact}")
