@@ -75,11 +75,11 @@ def save_object(file_path: str , obj: object) -> None:
     """
 
     try:
-        logging.info("Entered the save_object method of MainUtils class")
+        logger.info("Entered the save_object method of MainUtils class")
         os.makedirs(os.path.dirname(file_path) , exist_ok=True)
         with open(file_path, 'wb') as file_obj:
             dill.dump(obj , file_obj)
-        logging.info("Exited the save_object method of MainUtils class")
+        logger.info("Exited the save_object method of MainUtils class")
 
     except Exception as e:
         raise SensorException(e , sys)
@@ -92,10 +92,10 @@ def load_object(file_path: str) -> object:
     """
 
     try:
-        logging.info("Entered the load_object method of MainUtils class")
+        logger.info("Entered the load_object method of MainUtils class")
         with open(file_path , 'rb') as file_obj:
             obj = dill.load(file_obj)
-        logging.info("Exited the load_object method of MainUtils class")
+        logger.info("Exited the load_object method of MainUtils class")
         return obj
 
     except Exception as e:
