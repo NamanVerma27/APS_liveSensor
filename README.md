@@ -109,12 +109,14 @@ APS_sensorlive/
 ├── .gitignore                         # Enterprise gitignore patterns
 ├── config/
 │   └── schema.yaml                    # Dataset schema & drop-column definitions
+├── data/                              # Raw sensor datasets
+│   └── aps_failure_training_set1.csv  # Scania industrial failure dataset
 ├── logs/                              # Timestamped rolling application logs
 ├── main.py                            # FastAPI application & REST routing
-├── ML_Models/                         # Exploration & benchmark notebooks
-│   ├── ElasticNet.ipynb               # Linear regularized comparison
+├── notebooks/                         # Research & exploration notebooks
 │   ├── EDA.ipynb                      # Complete exploratory data analysis
-│   └── dataPreprocessing.ipynb        # Pipeline optimization & model bake-off
+│   ├── dataPreprocessing.ipynb        # Pipeline optimization & model bake-off
+│   └── ElasticNet.ipynb               # Linear regularized comparison
 ├── requirements.txt                   # Production dependency manifest (UTF-8)
 ├── setup.py                           # Python package installation configuration
 └── sensor/                            # Core industrial package
