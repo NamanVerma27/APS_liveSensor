@@ -99,7 +99,7 @@ class ModelTrainer:
 
             # Then, train the final model with those parameters
             logger.info("Training the final model with best hyperparameters")
-            model = self.train_model(x_train , y_train, best_params=None) # if we want to use default params , just set best_params = None
+            model = self.train_model(x_train , y_train, best_params=best_params)
 
             #------4. Calculate training and testing accuracy------
             logger.info("Calculating training and testing accuracy")
@@ -111,7 +111,13 @@ class ModelTrainer:
             logger.info(f"Training metric : {train_metric}")
             logger.info(f"Testing metric : {test_metric}")
 
-            #------5. Check for overfitting and underfitting------
+            #------5. Check expected score floor and overfitting/underfitting------
+            if test_metric.f1_score < self.model_trainer_config.expected_accuracy:
+                raise SensorException(
+                    f"Model test score ({test_metric.f1_score:.4f}) is below expected accuracy threshold ({self.model_trainer_config.expected_accuracy:.4f})",
+                    sys
+                )
+
             logger.info("Checking for overfitting and underfitting")
             diff = abs(train_metric.f1_score - test_metric.f1_score)
             if diff > self.model_trainer_config.overfitting_underfitting_threshold:

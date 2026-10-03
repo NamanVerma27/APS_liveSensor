@@ -110,6 +110,13 @@ class TrainPipeline:
             TrainPipeline.is_pipeline_running = True
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validaton(data_ingestion_artifact=data_ingestion_artifact)
+
+            if not data_validation_artifact.validation_status:
+                raise SensorException(
+                    f"Data validation failed due to schema mismatch or data drift. Review report at: {data_validation_artifact.drift_report_file_path}",
+                    sys
+                )
+
             data_preprocessing_artifact = self.start_data_preprocessing(data_validation_artifact=data_validation_artifact)
             model_trainer_artifact = self.start_model_trainer(data_preprocessing_artifact=data_preprocessing_artifact)
             model_evaluation_artifact = self.start_model_evaluation(

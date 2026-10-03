@@ -32,14 +32,10 @@ class ModelEvaluation:
         try:
             logger.info("Starting model evaluation stage")
             
-            # 1. Load and Prepare the "Evaluation Arena" (Full Dataset)
-            train_df = pd.read_csv(self.data_validation_artifact.valid_train_file_path)
+            # 1. Load and Prepare the Holdout Evaluation Arena (Test Set Only to prevent leakage)
             test_df = pd.read_csv(self.data_validation_artifact.valid_test_file_path)
-            
-            # Combine for a statistically robust evaluation
-            df = pd.concat([train_df, test_df])
-            y_true = df[TARGET_COLUMN].replace(TargetValueMapping().to_dict())
-            x_eval = df.drop(TARGET_COLUMN, axis=1)
+            y_true = test_df[TARGET_COLUMN].replace(TargetValueMapping().to_dict())
+            x_eval = test_df.drop(TARGET_COLUMN, axis=1)
 
             # 2. Identify the Challenger (The model we just trained)
             trained_model_path = self.model_trainer_artifact.trained_model_file_path
