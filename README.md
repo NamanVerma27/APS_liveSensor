@@ -73,7 +73,7 @@ flowchart TD
         P -->|"BackgroundTasks"| Q["Async /train Route"]
         P -->|"CSV Streaming"| R["Batch /predict Route"]
         P -->|"JSON Telemetry"| S["Real-Time /predict-live Route"]
-    end```
+    end
 ---
 
 ## 🔬 Exploratory Data Analysis & Scientific Learnings
