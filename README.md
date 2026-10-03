@@ -36,19 +36,20 @@ $$\text{Total Operational Cost} = (10 \times \text{False Positives}) + (500 \tim
 
 ```mermaid
 flowchart TD
-    subgraph Data Layer
+    subgraph Data_Layer
         A["MongoDB Atlas (Cloud Feature Store)"] --> B["Data Ingestion Engine"]
-        B -->|Train (80%)| C1["Train Dataset"]
-        B -->|Test (20%)| C2["Holdout Test Dataset"]
+        B -->|"Train (80%)"| C1["Train Dataset"]
+        B -->|"Test (20%)"| C2["Holdout Test Dataset"]
     end
 
-    subgraph Validation & Hygiene
-        C1 & C2 --> D["Data Validation Component"]
-        D -->|KS Drift Test (p > 0.05)| E["Validated Datasets"]
-        D -->|Drift Detected (p <= 0.05)| D_FAIL["Pipeline Early Exit & Alert"]
+    subgraph Validation_Hygiene
+        C1 --> D["Data Validation Component"]
+        C2 --> D
+        D -->|"KS Drift Test (p > 0.05)"| E["Validated Datasets"]
+        D -->|"Drift Detected (p <= 0.05)"| D_FAIL["Pipeline Early Exit & Alert"]
     end
 
-    subgraph Feature Engineering
+    subgraph Feature_Engineering
         E --> F["Data Preprocessing Pipeline"]
         F --> F1["SimpleImputer (constant fill=0)"]
         F1 --> F2["RobustScaler (outlier suppression)"]
@@ -56,25 +57,23 @@ flowchart TD
         F3 --> G["Transformed NumPy Tensors (.npy)"]
     end
 
-    subgraph Model Arena & Evaluation
+    subgraph Model_Arena_Evaluation
         G --> H["Model Trainer (GridSearchCV Tuning)"]
-        H -->|Champion Bundle (SensorModel)| I["Challenger Model"]
+        H --> I["Candidate / Challenger Model"]
         I --> J["Model Evaluation (Holdout Test Only)"]
         K["Production Champion (saved_models/)"] --> J
-        J -->|Challenger Beats Champion by > 0.02| L["Model Pusher Component"]
-        J -->|Fails Threshold| M["Model Rejected & Audited"]
+        J -->|"Challenger Beats Champion by > 0.02"| L["Model Pusher Component"]
+        J -->|"Fails Threshold"| M["Model Rejected & Audited"]
     end
 
-    subgraph Production Deployment
-        L --> N["Timestamped Model Registry (saved_models/<timestamp>/)"]
+    subgraph Production_Deployment
+        L --> N["Timestamped Model Registry (saved_models/timestamp/)"]
         N --> O["Prediction Pipeline (Feature Alignment Engine)"]
         O --> P["FastAPI Microservice (REST API)"]
-        P -->|BackgroundTasks| Q["Async /train Route"]
-        P -->|CSV Streaming| R["Batch /predict Route"]
-        P -->|JSON Telemetry| S["Real-Time /predict-live Route"]
-    end
-```
-
+        P -->|"BackgroundTasks"| Q["Async /train Route"]
+        P -->|"CSV Streaming"| R["Batch /predict Route"]
+        P -->|"JSON Telemetry"| S["Real-Time /predict-live Route"]
+    end```
 ---
 
 ## 🔬 Exploratory Data Analysis & Scientific Learnings
